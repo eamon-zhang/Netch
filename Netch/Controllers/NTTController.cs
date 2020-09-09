@@ -1,98 +1,95 @@
-﻿using Netch.Forms;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Threading;
+using System.Linq;
+using Netch.Utils;
 
 namespace Netch.Controllers
 {
-    public class NTTController
+    public class NTTController : Controller
     {
-        /// <summary>
-        ///		进程实例
-        /// </summary>
-        public Process Instance;
+        private string _localEnd;
+        private string _publicEnd;
+        private string _natType;
+        private bool _nttResult;
+
+        public NTTController()
+        {
+            Name = "NTT";
+            MainFile = "NTT.exe";
+        }
 
         /// <summary>
-        ///		当前状态
-        /// </summary>
-        public Models.State State = Models.State.Waiting;
-
-        /// <summary>
-        /// 启动NatTypeTester
+        ///     启动 NatTypeTester
         /// </summary>
         /// <returns></returns>
         public (bool, string, string, string) Start()
         {
-            Thread.Sleep(1000);
-            MainForm.Instance.NatTypeStatusText($"{Utils.i18N.Translate("Starting NatTester")}");
+            _nttResult = false;
+            _natType = _localEnd = _publicEnd = null;
+
             try
             {
-                if (!File.Exists("bin\\NTT.exe"))
-                {
-                    return (false, null, null, null);
-                }
-
-                Instance = MainController.GetProcess();
-                Instance.StartInfo.FileName = "bin\\NTT.exe";
-
-                Instance.StartInfo.Arguments = $" {Global.Settings.STUN_Server} {Global.Settings.STUN_Server_Port}";
-
+                InitInstance($" {Global.Settings.STUN_Server} {Global.Settings.STUN_Server_Port}");
                 Instance.OutputDataReceived += OnOutputDataReceived;
                 Instance.ErrorDataReceived += OnOutputDataReceived;
-
-                State = Models.State.Starting;
                 Instance.Start();
                 Instance.BeginOutputReadLine();
                 Instance.BeginErrorReadLine();
                 Instance.WaitForExit();
-
-                string[] result = File.ReadAllText("logging\\NTT.log").ToString().Split('#');
-                var natType = result[0];
-                var localEnd = result[1];
-                var publicEnd = result[2];
-                MainForm.Instance.NatTypeStatusText(natType);
-
-                return (true, natType, localEnd, publicEnd);
+                return (_nttResult, _natType, _localEnd, _publicEnd);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Utils.Logging.Info("NTT 进程出错");
-                Stop();
+                Logging.Error($"{Name} 控制器出错:\n" + e);
+                try
+                {
+                    Stop();
+                }
+                catch
+                {
+                    // ignored
+                }
+
                 return (false, null, null, null);
             }
         }
 
-        /// <summary>
-        ///		停止
-        /// </summary>
-        public void Stop()
+        private new void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            try
+            if (string.IsNullOrEmpty(e.Data)) return;
+            Logging.Info($"[NTT] {e.Data}");
+
+            var str = e.Data.Split(':').Select(s => s.Trim()).ToArray();
+            if (str.Length < 2)
+                return;
+            var key = str[0];
+            var value = str[1];
+            switch (key)
             {
-                if (Instance != null && !Instance.HasExited)
-                {
-                    Instance.Kill();
-                    Instance.WaitForExit();
-                }
-            }
-            catch (Exception e)
-            {
-                Utils.Logging.Info(e.ToString());
+                case "Other address is":
+                case "Binding test":
+                case "Nat mapping behavior":
+                case "Nat filtering behavior":
+                    break;
+                case "Local address":
+                    _localEnd = value;
+                    break;
+                case "Mapped address":
+                    _publicEnd = value;
+                    break;
+                case "result":
+                    _natType = value;
+                    _nttResult = true;
+                    break;
+                default:
+                    _natType = str.Last();
+                    break;
             }
         }
 
-        public void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
+        public override void Stop()
         {
-            if (!string.IsNullOrWhiteSpace(e.Data))
-            {
-                if (File.Exists("logging\\NTT.log"))
-                {
-                    File.Delete("logging\\NTT.log");
-                }
-
-                File.AppendAllText("logging\\NTT.log", $"{e.Data}\r\n");
-            }
+            StopInstance();
         }
     }
 }

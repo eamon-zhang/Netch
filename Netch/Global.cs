@@ -1,20 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Windows.Forms;
+using Netch.Forms;
+using Netch.Models;
 
 namespace Netch
 {
     public static class Global
     {
+        
         /// <summary>
-        ///     主窗体
+        ///     换行
         /// </summary>
-        public static Forms.MainForm MainForm;
+        public const string EOF = "\r\n";
 
+        public static readonly string NetchDir = Application.StartupPath;
+        
         /// <summary>
-        ///     设置窗体
+        ///     主窗体的静态实例
         /// </summary>
-        public static Forms.SettingForm SettingForm;
+        public static MainForm MainForm;
 
         /// <summary>
 		///		SS/SSR 加密方式
@@ -193,11 +199,11 @@ namespace Netch
         /// <summary>
         ///     用于读取和写入的配置
         /// </summary>
-        public static Models.Setting Settings = new Models.Setting();
+        public static Setting Settings = new Setting();
 
         /// <summary>
-        ///     用于存储模式文件内容
+        ///     用于存储模式
         /// </summary>
-        public static List<Models.Mode> ModeFiles = new List<Models.Mode>();
+        public static readonly List<Mode> Modes = new List<Mode>();
     }
 }

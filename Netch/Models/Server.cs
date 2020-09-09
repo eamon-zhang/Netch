@@ -1,8 +1,6 @@
-﻿using MaxMind.GeoIP2;
-using Netch.Utils;
-using System;
-using System.Net;
+﻿using System;
 using System.Threading.Tasks;
+using Netch.Utils;
 
 namespace Netch.Models
 {
@@ -76,7 +74,7 @@ namespace Netch.Models
         /// <summary>
         ///     协议（SSR）
         /// </summary>
-        public string Protocol;
+        public string Protocol = Global.Protocols[0];
 
         /// <summary>
         ///     协议参数（SSR）
@@ -86,7 +84,7 @@ namespace Netch.Models
         /// <summary>
         ///     混淆（SSR）
         /// </summary>
-        public string OBFS;
+        public string OBFS = Global.OBFSs[0];
 
         /// <summary>
         ///     混淆参数（SSR）
@@ -96,12 +94,12 @@ namespace Netch.Models
         /// <summary>
         ///		传输协议（VMess）
         /// </summary>
-        public string TransferProtocol = "tcp";
+        public string TransferProtocol = Global.TransferProtocols[0];
 
         /// <summary>
         ///		伪装类型（VMess）
         /// </summary>
-        public string FakeType = string.Empty;
+        public string FakeType = Global.FakeTypes[0];
 
         /// <summary>
         ///		伪装域名（VMess：HTTP、WebSocket、HTTP/2）
@@ -116,7 +114,7 @@ namespace Netch.Models
         /// <summary>
         ///		QUIC 加密方式（VMess）
         /// </summary>
-        public string QUICSecure = "none";
+        public string QUICSecure = Global.EncryptMethods.VMessQUIC[0];
 
         /// <summary>
         ///		QUIC 加密密钥（VMess）
@@ -131,7 +129,7 @@ namespace Netch.Models
         /// <summary>
         ///		Mux 多路复用（VMess）
         /// </summary>
-        public bool UseMux = false;
+        public bool UseMux = true;
 
         /// <summary>
         ///     延迟
@@ -144,10 +142,10 @@ namespace Netch.Models
         public string Country;
 
         /// <summary>
-		///		获取备注
-		/// </summary>
-		/// <returns>备注</returns>
-		public override string ToString()
+        ///		获取备注
+        /// </summary>
+        /// <returns>备注</returns>
+        public override string ToString()
         {
             if (string.IsNullOrWhiteSpace(Remark))
             {
@@ -156,35 +154,10 @@ namespace Netch.Models
 
             if (Country == null)
             {
-                try
-                {
-                    var databaseReader = new DatabaseReader("bin\\GeoLite2-Country.mmdb");
-
-                    if (IPAddress.TryParse(Hostname, out _) == true)
-                    {
-                        Country = databaseReader.Country(Hostname).Country.IsoCode;
-                    }
-                    else
-                    {
-                        var DnsResult = DNS.Lookup(Hostname);
-
-                        if (DnsResult != null)
-                        {
-                            Country = databaseReader.Country(DnsResult).Country.IsoCode;
-                        }
-                        else
-                        {
-                            Country = "UN";
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    Country = "UN";
-                }
+                Country = Utils.Utils.GetCityCode(Hostname);
             }
 
-            Group = Group.Equals("None") ? Group.ToUpper() : Group;
+            Group = Group.Equals("None") || Group.Equals("") ? "NONE" : Group;
 
             switch (Type)
             {
@@ -211,7 +184,7 @@ namespace Netch.Models
         {
             try
             {
-                var destination = Utils.DNS.Lookup(Hostname);
+                var destination = DNS.Lookup(Hostname);
                 if (destination == null)
                 {
                     return Delay = -2;

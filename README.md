@@ -1,16 +1,23 @@
 # Netch
-[![](https://img.shields.io/badge/Telegram-Channel-blue)](https://t.me/Netch) [![](https://img.shields.io/badge/Telegram-Group-green)](https://t.me/Netch_Discuss_Group) ![Netch CI](https://github.com/NetchX/Netch/workflows/Netch%20CI/badge.svg)
-          
+[![Platform](https://img.shields.io/badge/platform-windows-orange.svg)](https://github.com/NetchX/Netch)
+[![Version](https://img.shields.io/github/v/release/NetchX/Netch)](https://github.com/NetchX/Netch/releases)
+[![Downloads](https://img.shields.io/github/downloads/NetchX/Netch/total.svg)](https://github.com/NetchX/Netch/releases)
+[![Netch CI](https://github.com/NetchX/Netch/workflows/Netch%20CI/badge.svg)](https://github.com/NetchX/Netch/actions)
+[![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
+[![](https://img.shields.io/badge/Telegram-Channel-blue)](https://t.me/Netch) [![](https://img.shields.io/badge/Telegram-Group-green)](https://t.me/Netch_Discuss_Group) 
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fnetch.org)](https://netch.org/)
+
+[中文说明](/docs/README.zh-CN.md)
+
+[FAQ/常见问题](https://netch.org/#/docs/zh-CN/faq)
+
 Game accelerator
-
-[简体中文](docs/README.zh-CN.md) (此版本内容更丰富)
-
-[Website](https://netch.org/)
 
 ## TOC
 - [Netch](#netch)
 	- [TOC](#toc)
 	- [Description](#description)
+    - [Sponsor](#sponsor)
 	- [Donate](#donate)
 	- [Screenshots](#screenshots)
 	- [Requirements](#requirements)
@@ -20,6 +27,15 @@ Game accelerator
 Netch is an open source game accelerator. Unlike SSTap, which needs to add rules to function as a blacklist proxy, Netch is more similar to SocksCap64, which can scan the game directory to get their process names specifically and forward their network traffic through the proxy server. Now supports Socks5, Shadowsocks, ShadowsocksR, VMess.
 
 As well, Netch avoid the restricted NAT problem caused by SSTap. You can use an NATTypeTester to test out what your NAT type is. When using SSTap to speed up some P2P gaming connections or the game is required for that kind of open NAT type, you may experience some bad situations such as unable to join the game.
+
+## Sponsor
+<a href="https://www.jetbrains.com/?from=Netch"><img src=".github/jetbrains-variant-4.svg" alt="JetBrains" width="200"/></a>
+
+- [RabbitHosts](https://rabbithosts.com/cart.php)
+- [ManSora](https://www.mansora.co/cart.php)
+- [ExCloud](https://excloud.net/cart.php)
+- [NyanCat](https://nyancat.info/register)
+- [YoYu](https://home.yoyu.ltd/cart.php)
 
 ## Donate
 - XMR *48ju3ELNZEa6wwPBMexCJ9G218BGY2XwhH6B6bmkFuJ3QgM4hPw2Pra35jPtuBZSc7SLNWeBpiWJZWjQeMAiLnTx2tH2Efx*
